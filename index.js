@@ -26,14 +26,19 @@ let persons = [
 
 app.get('/info', (req, res) => {
     res.send(
-        `
-        <p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>
-        <h3>${new Date()}</h3>
-        `)
+        `<p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>
+        <h3>${new Date()}</h3>`
+    )
 })
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
+})
+
+app.get('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const person = persons.find(person => person.id === id)
+    res.json(person)
 })
 
 const PORT = 3001

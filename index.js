@@ -1,12 +1,14 @@
 const express = require('express')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 morgan.token('content', function getId (req) {
     return JSON.stringify(req.body)
   })
 
 const app = express()
+app.use(cors())
 app.use(morgan(':method :url :content :status :res[content-length] - :response-time ms'))
 app.use(bodyParser.json())
 
@@ -60,7 +62,7 @@ app.post('/api/persons', (req, res) => {
         return res.status(400).json({error: `missing number`})
     if (!person.name)
         return res.status(400).json({error: `missing name`})
-    if (persons.find(person => person.name === person.name ))
+    if (persons.find(item => item.name === person.name ))
         return res.status(400).json({error: `Name must be unique`})
     person.id = Math.floor(Math.random() * Math.floor(100000))
     
@@ -70,10 +72,19 @@ app.post('/api/persons', (req, res) => {
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
+    const id = Number(req.params.id)    
     persons = persons.filter(person => person.id !== id)
 
     res.status(204).end()
+})
+
+app.put('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const updatedPerson = req.body
+
+    persons = persons.map(person => person.id === id? updatedPerson : person)
+
+    res.json(updatedPerson)
 })
 
 const PORT = 3001

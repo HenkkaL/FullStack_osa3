@@ -56,6 +56,7 @@ app.get('/api/persons', (req, res) => {
     Person
         .find({})
         .then(persons => {
+            console.log(persons)
             res.json(persons.map(formatPerson))
         })
 })
@@ -78,7 +79,6 @@ app.post('/api/persons', (req, res) => {
     if (body.number === undefined || body.number === '') {
         return res.status(400).json({error: 'number missing'});        
     }
-    console.log('testi2')
 
     const person = new Person({
         name: body.name,
@@ -93,10 +93,18 @@ app.post('/api/persons', (req, res) => {
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)    
-    persons = persons.filter(person => person.id !== id)
-
-    res.status(204).end()
+    const id = req.params.id    
+    Person.findByIdAndRemove(id, (err, todo) => {
+        if(err) {
+            return res.status(500).send(err)
+        }
+            
+        const responce = {
+            message: 'Deleted successfully',
+            id: todo._id
+        }
+        return res.status(200).send(responce)
+    })
 })
 
 app.put('/api/persons/:id', (req, res) => {

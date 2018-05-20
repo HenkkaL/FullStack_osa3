@@ -72,6 +72,10 @@ app.get('/api/persons/:id', (req, res) => {
     .then(person => {
         res.json(formatPerson(person))
     })
+    .catch(error => {
+        console.log(error)
+        response.status(404).end()
+    })
 })
 
 app.post('/api/persons', (req, res) => {

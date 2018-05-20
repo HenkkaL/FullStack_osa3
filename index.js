@@ -61,7 +61,6 @@ app.get('/api/persons', (req, res) => {
     Person
         .find({})
         .then(persons => {
-            console.log(persons)
             res.json(persons.map(formatPerson))
         })
 })
@@ -71,7 +70,6 @@ app.get('/api/persons/:id', (req, res) => {
     Person
     .findById(id)
     .then(person => {
-        console.log(person)
         res.json(formatPerson(person))
     })
 })
@@ -90,11 +88,21 @@ app.post('/api/persons', (req, res) => {
         number: body.number
     })
 
-    person
-        .save()
-        .then(savedPerson => {
-            res.json(formatPerson(savedPerson))
+    Person
+        .find({name: body.name})
+        .then(result => {
+            if(result.length === 0) {
+                person
+                .save()
+                .then(savedPerson => {
+                    res.json(formatPerson(savedPerson))
+                })                
+            }
+            else
+                return res.status(400).json({error: 'duplicate name'}); 
         })
+
+
 })
 
 app.delete('/api/persons/:id', (req, res) => {

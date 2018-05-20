@@ -108,12 +108,20 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.put('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const updatedPerson = req.body
 
-    persons = persons.map(person => person.id === id? updatedPerson : person)
+    Person
+        .findByIdAndUpdate(id, updatedPerson, {new: true}, (err, todo) => {
+        if (err){
+            console.log(err)
+            return res.status(500).send(err);
+        }
+        })
+        .then(updatedPerson => {
+            res.json(formatPerson(updatedPerson))
+        })
 
-    res.json(updatedPerson)
 })
 
 const PORT = process.env.PORT || 3001

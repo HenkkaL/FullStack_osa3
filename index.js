@@ -2,7 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const Note = require('./models/person')
+const Person = require('./models/person')
 
 morgan.token('content', function getId (req) {
     return JSON.stringify(req.body)
@@ -53,12 +53,10 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-    Note
+    Person
         .find({})
         .then(persons => {
-            console.log(persons)
             res.json(persons.map(formatPerson))
-            console.log(persons.map(formatPerson))
         })
 })
 
@@ -73,18 +71,25 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-    const person = req.body
-    if (!person.number)
-        return res.status(400).json({error: `missing number`})
-    if (!person.name)
-        return res.status(400).json({error: `missing name`})
-    if (persons.find(item => item.name === person.name ))
-        return res.status(400).json({error: `Name must be unique`})
-    person.id = Math.floor(Math.random() * Math.floor(100000))
-    
-    persons = persons.concat(person)
+    const body = req.body
+    if (body.name === undefined) {
+        return res.status(400).json({error: 'name missing'});        
+    }
+    if (body.number === undefined) {
+        return res.status(400).json({error: 'number missing'});        
+    }
+    console.log('testi2')
 
-    res.json(person)
+    const person = new Person({
+        name: body.name,
+        number: body.number
+    })
+
+    person
+        .save()
+        .then(savedPerson => {
+            res.json(formatPerson(savedPerson))
+        })
 })
 
 app.delete('/api/persons/:id', (req, res) => {

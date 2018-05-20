@@ -46,10 +46,15 @@ const formatPerson = (person) => {
 }
 
 app.get('/info', (req, res) => {
-    res.send(
-        `<p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>
-        <h3>${new Date()}</h3>`
-    )
+    Person
+    .find({})
+    .then(persons => {
+        res.send(
+            `<p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>
+            <h3>${new Date()}</h3>`
+        )
+    })
+
 })
 
 app.get('/api/persons', (req, res) => {
@@ -62,13 +67,13 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
-    if(person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }    
+    const id = req.params.id
+    Person
+    .findById(id)
+    .then(person => {
+        console.log(person)
+        res.json(formatPerson(person))
+    })
 })
 
 app.post('/api/persons', (req, res) => {
